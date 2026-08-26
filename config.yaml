@@ -649,7 +649,6 @@ custom_providers:
       google/gemini-3-pro-image: {}
       cohere/north-mini-code:free: {}
       z-ai/glm-5.2: {}
-      z-ai/glm-5.2:batch: {}
       z-ai/glm-5.2:free: {}
       openrouter/fusion: {}
       moonshotai/kimi-k2.7-code: {}
