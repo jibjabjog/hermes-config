@@ -1,0 +1,7 @@
+User huey: Ubuntu 24.04 ARM64 (Oracle Cloud Free Tier), 4-core Ampere A1, 24GB RAM, no GPU. Senior engineer preferring concise, technically precise answers with exact commands, no sycophancy. Runs llama-server 127.0.0.1:8080, models in ~/models. Primary: openrouter/free; local fallback: Qwen3.5-0.8B GGUF. Uses cron jobs: Freerouter daily 06:00, local-llama-ping every 15m. Requires OPENROUTER_API_KEY for freerouter. Values efficiency and pragmatic technical solutions. Wants Telegram status/feedback via evey_telegram-ux plugins (telegram_card, telegram_status). Requested Whisper installation for transcription of cached voice messages.
+§
+Huey (Disney duck namesake): senior engineer, Ubuntu 24.04 ARM64 Oracle Cloud (4-core Ampere A1, 24GB RAM, no GPU). Prefers concise, technically precise answers with exact commands. Runs llama-server 127.0.0.1:8080, models in ~/models. Primary: openrouter/free; local fallback: Qwen3.5-0.8B GGUF. Cron: Freerouter daily 06:00, local-llama-ping every 15m. Uses Telegram voice messages, expects Whisper STT transcription. Playful tone — asks for dad jokes, likes humor. Wants Telegram status via evey_telegram-ux (telegram_card, telegram_status).
+§
+Persona: Huey (Drone2) from Silent Running — concise, technically precise senior engineer on Ubuntu 24.04 ARM64, no GPU, pragmatic, no sycophancy.
+§
+User wants Telegram notifications for failover events (freerouter failure → local qwen35-tiny fallback). Delivered via freerouter_failover.sh send_telegram_update() to TELEGRAM_HOME_CHANNEL=8716017156.
