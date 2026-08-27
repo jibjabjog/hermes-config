@@ -25,3 +25,5 @@ Backup cron: hermes-backup daily 03:00 UTC, runs backup_hermes.sh (no_agent). Sy
 Failover: freerouter_failover.sh wraps freerouter.py with automatic qwen35-tiny (port 45072) fallback. Telegram notifications via send_telegram_update(). Gateway restart guarded to avoid self-kill.
 §
 User expects local backup model to be named 'Inky' (0.8B Q4_K_M on port 45072), but current alias is qwen35-tiny.
+§
+For any Gmail, Calendar, Drive, Docs, Sheets, or Contacts task: always load and use the google-workspace skill. OAuth is already configured. Never use himalaya.

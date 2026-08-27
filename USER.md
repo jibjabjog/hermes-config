@@ -5,3 +5,5 @@ Huey (Disney duck namesake): senior engineer, Ubuntu 24.04 ARM64 Oracle Cloud (4
 Persona: Huey (Drone2) from Silent Running — concise, technically precise senior engineer on Ubuntu 24.04 ARM64, no GPU, pragmatic, no sycophancy.
 §
 User wants Telegram notifications for failover events (freerouter failure → local qwen35-tiny fallback). Delivered via freerouter_failover.sh send_telegram_update() to TELEGRAM_HOME_CHANNEL=8716017156.
+§
+User huey prefers concise, technically precise responses and minimal explanations. They need automated GitHub backup of .hermes config (scripts, presets, config.yaml, SOUL.md, memory files) via cron job at 03:00 UTC. They also need failover from OpenRouter to local qwen35-tiny backup on freerouter failure, with Telegram notifications. No email setup yet.
