@@ -23,7 +23,12 @@ check_qwen35_tiny() {
 ensure_qwen35_tiny() {
     if ! check_qwen35_tiny; then
         log "WARN: qwen35-tiny not running on port 45072 — starting it"
-        "$SCRIPT_DIR/../llama.cpp/build/bin/llama-server" \
+        # NOTE: qwen35-tiny is now managed by the llama-qwen35-tiny.service systemd
+        # --user unit (Restart=always), so this manual spawn is a last-resort fallback
+        # only — it should not normally be needed. The path below was previously wrong
+        # ("$SCRIPT_DIR/../llama.cpp/..." resolved to ~/.hermes/llama.cpp/..., which
+        # doesn't exist) and silently failed every run; fixed to the real binary location.
+        /home/huey/llama.cpp/build/bin/llama-server \
             --host 127.0.0.1 --port 45072 \
             --alias qwen35-tiny \
             --model "$HERMES_HOME/../models/Qwen3.5-0.8B-Q4_K_M.gguf" \
@@ -42,24 +47,44 @@ ensure_qwen35_tiny() {
     fi
 }
 
-# Switch hermes default to local qwen35-tiny via llama-server config
+# Switch hermes's native fallback_model to the emergency local backup, qwen35-tiny
 switch_to_local() {
     log "SWITCHING to local backup: qwen35-tiny (port 45072)"
 
     # Update failover state
     echo "{\"active\":\"local\",\"timestamp\":\"$TIMESTAMP\"}" > "$FAILOVER_STATE"
 
-    # Patch config.yaml to point default at qwen35-tiny via local server
-    # This assumes hermes is configured with an openai-compatible local endpoint
-    # The actual switching depends on hermes config — may need hermes model set
-    log "FAILOVER COMPLETE: Running on qwen35-tiny local backup"
+    # Actually repoint config.yaml's fallback_model at qwen35-tiny (skip in dry-run —
+    # DRY_RUN is set by MAIN before this function is ever called)
+    if [[ "$DRY_RUN" == "false" ]]; then
+        if python3 "$SCRIPT_DIR/set_fallback_model.py" qwen35-tiny 45072 >> "$LOG_FILE" 2>&1; then
+            log "FAILOVER COMPLETE: fallback_model now points at qwen35-tiny (local)"
+        else
+            log "ERROR: failed to patch fallback_model to qwen35-tiny"
+            return 1
+        fi
+    else
+        log "DRY-RUN: would patch fallback_model to qwen35-tiny (local)"
+    fi
     return 0
 }
 
-# Switch back to openrouter (freerouter will do this on next run)
+# Switch fallback_model back to the normal local backup, qwen35-fast (freerouter
+# itself only rotates OpenRouter's main/vision/reasoning/coding models — it never
+# touches fallback_model, so this script owns resetting it after a recovery)
 switch_to_openrouter() {
     log "Switching back to OpenRouter mode"
     echo "{\"active\":\"openrouter\",\"timestamp\":\"$TIMESTAMP\"}" > "$FAILOVER_STATE"
+
+    if [[ "$DRY_RUN" == "false" ]]; then
+        if python3 "$SCRIPT_DIR/set_fallback_model.py" qwen35-fast 45071 >> "$LOG_FILE" 2>&1; then
+            log "fallback_model restored to qwen35-fast (local)"
+        else
+            log "ERROR: failed to restore fallback_model to qwen35-fast"
+        fi
+    else
+        log "DRY-RUN: would restore fallback_model to qwen35-fast (local)"
+    fi
 }
 
 # Send Telegram notification

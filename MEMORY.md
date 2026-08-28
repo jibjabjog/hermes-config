@@ -16,7 +16,7 @@ Whisper base model installed in ~/.hermes/hermes-agent/venv (session 2026-08-25)
 §
 llama-server quirk: --quiet is an invalid flag (use -lv 2 instead). Verified session 2026-08-26 spinning Qwen3.5-0.8B on port 45072. Primary 8080 still healthy.
 §
-Session 2026-08-26: Built freerouter_failover.sh — automatic OpenRouter → local qwen35-tiny (Qwen3.5-0.8B on port 45072) failover with Telegram alerts. Loads bot token and chat ID from config file. Gateway-restart guarded (skipped when running inside gateway process to prevent SIGTERM self-kill). Now called by Freerouter cron (06:00 daily, deliver: local, no_agent). Backup qwen35-tiny runs 4 threads, ctx=2048, CPU-only, OpenBLAS. Earlier "Inky" reference = old nickname for qwen35-tiny preset.
+Session 2026-08-26: Built freerouter_failover.sh — automatic OpenRouter → local qwen35-tiny (Qwen3.5-0.8B on port 45072) failover with Telegram alerts. Loads bot token and chat ID from config file. Gateway-restart guarded (skipped when running inside gateway process to prevent SIGTERM self-kill). Now called by Freerouter cron (06:00 daily, deliver: local, no_agent). Backup qwen35-tiny runs 4 threads, ctx=10240, CPU-only, OpenBLAS. Alias is **Inky** (updated 2026-08-27). Earlier "Inky" reference = old nickname for qwen35-tiny preset.
 §
 GitHub backup repo: jibjabjog/hermes-backup (private) for .hermes/ config, failover scripts, presets. gh CLI authenticated with scopes: gist, read:org, repo, workflow.
 §
@@ -24,6 +24,6 @@ Backup cron: hermes-backup daily 03:00 UTC, runs backup_hermes.sh (no_agent). Sy
 §
 Failover: freerouter_failover.sh wraps freerouter.py with automatic qwen35-tiny (port 45072) fallback. Telegram notifications via send_telegram_update(). Gateway restart guarded to avoid self-kill.
 §
-User expects local backup model to be named 'Inky' (0.8B Q4_K_M on port 45072), but current alias is qwen35-tiny.
+User expects local backup model to be named **Inky** (0.8B Q4_K_M on port 45072) — alias updated to Inky 2026-08-27, ctx-size bumped 2048→10240.
 §
 For any Gmail, Calendar, Drive, Docs, Sheets, or Contacts task: always load and use the google-workspace skill. OAuth is already configured. Never use himalaya.

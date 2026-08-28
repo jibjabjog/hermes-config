@@ -1,7 +1,7 @@
 model:
   default: openrouter/free
   provider: openrouter
-  base_url: ''
+  base_url: ''  # Fixed by openrouter_model_updater
   api_mode: chat_completions
 providers:
   custom:
@@ -163,9 +163,9 @@ bedrock:
 auxiliary:
   vision:
     provider: openrouter
-    model: stealth/ox-alpha
+    model: minimax/minimax-m3:free
     base_url: ''
-    api_key: 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
+    api_key: ${OPENROUTER_API_KEY}
     timeout: 120
     download_timeout: 30
   compression:
@@ -296,7 +296,7 @@ dashboard:
     session_ttl_seconds: 0
   public_url: ''
 privacy:
-  redact_pii: false
+  redact_pii: true
 tts:
   provider: openrouter
   edge:
@@ -441,8 +441,7 @@ approvals:
   cron_mode: deny
   mcp_reload_confirm: true
   destructive_slash_confirm: false
-command_allowlist:
-  - overwrite system file via tee
+command_allowlist: []
 hooks_auto_accept: false
 security:
   allow_private_urls: false
@@ -516,7 +515,7 @@ onboarding:
     tool_progress_prompt: true
     busy_input_prompt: true
 updates:
-  pre_update_backup: false
+  pre_update_backup: 'true'
   backup_keep: 5
   non_interactive_local_changes: stash
 lsp:
@@ -991,9 +990,9 @@ custom_providers:
       openai/gpt-4: {}
     models_discovered: true
 fallback_model:
-  provider: openrouter
+  provider: custom
   model: qwen35-fast
-  base_url: https://openrouter.ai/api/v1
+  base_url: http://127.0.0.1:45071/v1
   api_key: llama.cpp
 plugins:
   enabled:

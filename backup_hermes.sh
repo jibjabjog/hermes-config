@@ -36,6 +36,18 @@ sync_configs() {
     cp /home/huey/.hermes/SOUL.md "$BACKUP_DIR/" 2>/dev/null || true
     cp /home/huey/.hermes/memories/MEMORY.md "$BACKUP_DIR/" 2>/dev/null || true
     cp /home/huey/.hermes/memories/USER.md "$BACKUP_DIR/" 2>/dev/null || true
+
+    # Redact any literal secret-shaped values from the backup-dir COPY of
+    # config.yaml before it's ever staged/committed — never touches the live
+    # ~/.hermes/config.yaml. See AUDIT.md B.3.
+    if [[ -f "$BACKUP_DIR/config.yaml" ]]; then
+        REDACT_OUT=$(python3 /home/huey/.hermes/scripts/redact_config_secrets.py "$BACKUP_DIR/config.yaml" 2>&1) || {
+            log "ERROR: redact_config_secrets.py failed: $REDACT_OUT"
+            return 1
+        }
+        log "$REDACT_OUT"
+    fi
+
     log "Configs synced"
 }
 
