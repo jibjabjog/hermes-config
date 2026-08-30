@@ -182,11 +182,14 @@ When configured, you'll receive alerts for:
 ## Configuration
 
 ### Google Integration
-*Note: This setup currently focuses on GitHub backup. Google integration would require:*
-1. Google Workspace CLI (`gws`) installation
-2. OAuth2 token generation
-3. Calendar API access setup
-4. Additional config sections in `config.yaml`
+Google Workspace (Gmail, Calendar, Drive, Contacts, Docs, Sheets) is configured via
+OAuth through Hermes's built-in `google-workspace` skill — no separate `gws` CLI or
+extra `config.yaml` sections needed. One local-only detail: the skill's `SKILL.md`
+is patched to call Hermes's bundled venv Python explicitly
+(`~/.hermes/hermes-agent/venv/bin/python`), since the system `python` on this box
+lacks the Google client libraries. That patch isn't tracked in this repo and can be
+reverted by a `hermes update` — reapply it manually if Google Workspace calls start
+failing with import errors after an update.
 
 ### GitHub Setup
 - Repository: `jibjabjog/hermes-config` (private)
@@ -226,11 +229,6 @@ gh repo view jibjabjog/hermes-config
 ```
 
 ## Future Enhancements
-
-### Google Calendar Integration
-- Automated meeting extraction from calendar
-- Slack/Telegram notification forwarding
-- RSVP management and scheduling
 
 ### Advanced Failover
 - Multi-model fallback chains
