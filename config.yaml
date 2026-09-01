@@ -1,7 +1,7 @@
 model:
   default: openrouter/free
   provider: openrouter
-  base_url: ''
+  base_url: ''  # Fixed by openrouter_model_updater
   api_mode: chat_completions
 providers:
   custom:
