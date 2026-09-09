@@ -163,7 +163,7 @@ bedrock:
 auxiliary:
   vision:
     provider: openrouter
-    model: minimax/minimax-m3:free
+    model: nvidia/nemotron-3.5-lightning:free
     base_url: ''
     api_key: ${OPENROUTER_API_KEY}
     timeout: 120
@@ -359,7 +359,7 @@ memory:
   provider: ''
   flush_min_turns: 10
 delegation:
-  model: minimax/minimax-m3:free
+  model: nvidia/nemotron-3.5-lightning:free
   provider: openrouter
   base_url: https://openrouter.ai/api/v1
   api_key: ''
