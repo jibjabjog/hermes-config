@@ -600,8 +600,7 @@ platform_toolsets:
 custom_providers:
 - name: Bert
   base_url: https://openrouter.ai/api/v1
-  api_key: llama.cpp
-  model: qwen35-fast
+  key_env: OPENROUTER_API_KEY
   context_length: 32768
   request_timeout_seconds: 600
   stale_timeout_seconds: 120
