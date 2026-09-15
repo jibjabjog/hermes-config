@@ -76,9 +76,19 @@ Local Hermes Instance (127.0.0.1:8080)
 ### 3. Model Presets (`llama-presets.ini`)
 
 **Configuration sections:**
-- `qwen35-fast` — Primary OpenRouter model (4B Q4_K_M)
-- `qwen35-tiny` — Emergency backup (0.8B Q4_K_M, ctx-size 2048)
-- `tiny-test` — Additional backup preset
+- `qwen35-tiny` — the sole local fallback model (0.8B Q4_K_M, ctx-size 2048)
+- `tiny-test` — additional backup preset
+- `qwen35-fast` (4B) — **retired 2026-09-15.** Originally intended as a
+  second, "everyday" fallback tier ahead of qwen35-tiny, running behind a
+  multi-model router (`llama-router.service`, port 8080). That router setup
+  drifted out of sync with `config.yaml` — `fallback_model` and 10 of 11
+  `auxiliary.*` sub-configs ended up silently pointing at a dead port or the
+  real OpenRouter cloud with a placeholder key, so the "everyday" tier
+  hadn't actually been reachable for weeks. Running a 4B model with any
+  real intent is also CPU-bound-hostile (~5.7GB RSS just sitting there).
+  Simplified to a single local tier: `qwen35-tiny` is now every fallback
+  path's only target, and the router service + 4B model file are gone. This
+  section is left in `llama-presets.ini` as inert history, not actively used.
 
 **Usage:** Loaded by llama-server via `--models-preset` flag
 
@@ -86,10 +96,19 @@ Local Hermes Instance (127.0.0.1:8080)
 
 **Key Sections:**
 - `model.default: openrouter/free` — Primary model selection
-- `auxiliary.vision.model: stealth/ox-alpha` — Vision model
-- `auxiliary.compression.model: qwen35-fast` — Compression model
+- `auxiliary.vision.model` — Vision model (rotates via Freerouter; stays on
+  OpenRouter, not local)
+- `fallback_model` and all `auxiliary.*` sub-configs except `vision` — point
+  at `qwen35-tiny` (`http://127.0.0.1:45072/v1`), the one local model on
+  this box
 - Various personality settings (concise, technical, creative, etc.)
 - Toolsets and gateway configuration
+- One exception left as-is: `custom_providers` has an entry named "Bert"
+  with a stray `model: qwen35-fast` default left over from the same
+  misconfiguration, but its `base_url` correctly points at real OpenRouter
+  behind a genuine ~30-model catalog. It's inert (nothing selects it as the
+  active provider), so it wasn't force-fit into the qwen35-tiny fix —
+  flagged for whoever eventually cleans it up.
 
 ## Setup Instructions
 
@@ -135,24 +154,26 @@ ln -sf ~/models/Qwen3.5-0.8B-Q4_K_M.gguf llama.cpp/models/
 ```
 
 ### Start Services
-```bash
-# Start primary llama-server (8080)
-~/llama.cpp/build/bin/llama-server \
-  --host 127.0.0.1 --port 8080 \
-  --jinja -fa on -t 4 -ngl 0 \
-  --cache-type-k q4_0 --cache-type-v q4_0 \
-  --models-preset ~/llama-presets.ini \
-  --models-max 2 --models-autoload
 
-# Start qwen35-tiny backup (45072) in background
+Just the one local model now — no router, no second tier:
+
+```bash
 ~/llama.cpp/build/bin/llama-server \
   --host 127.0.0.1 --port 45072 \
-  --alias qwen35-tiny \
+  --alias Inky \
   --model ~/models/Qwen3.5-0.8B-Q4_K_M.gguf \
-  --ctx-size 2048 --threads 4 \
+  --ctx-size 10240 --threads 4 \
+  --n-gpu-layers 0 \
   --cache-type-k q4_0 --cache-type-v q4_0 \
   > ~/logs/qwen35-tiny.log 2>&1 &
 ```
+
+In practice this runs as `llama-qwen35-tiny.service` (systemd `--user` unit,
+`Restart=always`), not a bare backgrounded command — see the
+`jibjabjog/huey-origins` setup guide for the full unit file. (The
+`--models-preset`/router invocation that used to start a second tier here
+was removed along with `llama-router.service` — see the Model Presets
+section above.)
 
 ## Operation
 
@@ -175,9 +196,11 @@ curl http://127.0.0.1:8080/health
 
 ### Telegram Notifications
 When configured, you'll receive alerts for:
-- ✅ Successful freerouter runs (OpenRouter active)
-- ⚠️ Failover events (switched to qwen35-tiny)
-- 🔄 Recovery events (back to OpenRouter)
+- ✅ Successful freerouter runs (OpenRouter models refreshed)
+- ⚠️ Freerouter failures (OpenRouter model refresh unavailable — `fallback_model`
+  is already permanently pinned to `qwen35-tiny`, so there's no separate
+  "switch" event to report anymore, just the state)
+- 🔄 Recovery confirmations
 
 ## Configuration
 

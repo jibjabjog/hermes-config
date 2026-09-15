@@ -47,44 +47,21 @@ ensure_qwen35_tiny() {
     fi
 }
 
-# Switch hermes's native fallback_model to the emergency local backup, qwen35-tiny
+# fallback_model is now permanently pinned to qwen35-tiny (port 45072) —
+# it no longer swaps between two local tiers (the old qwen35-fast/4B tier was
+# retired: it was resource-heavy on this CPU-only box and, separately, its
+# base_url had silently gone stale — see AUDIT.md). These functions now only
+# track/report Freerouter's own OpenRouter-availability state; they
+# deliberately no longer touch fallback_model.
 switch_to_local() {
-    log "SWITCHING to local backup: qwen35-tiny (port 45072)"
-
-    # Update failover state
+    log "Freerouter unavailable — fallback_model already pinned to qwen35-tiny (local), nothing to switch"
     echo "{\"active\":\"local\",\"timestamp\":\"$TIMESTAMP\"}" > "$FAILOVER_STATE"
-
-    # Actually repoint config.yaml's fallback_model at qwen35-tiny (skip in dry-run —
-    # DRY_RUN is set by MAIN before this function is ever called)
-    if [[ "$DRY_RUN" == "false" ]]; then
-        if python3 "$SCRIPT_DIR/set_fallback_model.py" qwen35-tiny 45072 >> "$LOG_FILE" 2>&1; then
-            log "FAILOVER COMPLETE: fallback_model now points at qwen35-tiny (local)"
-        else
-            log "ERROR: failed to patch fallback_model to qwen35-tiny"
-            return 1
-        fi
-    else
-        log "DRY-RUN: would patch fallback_model to qwen35-tiny (local)"
-    fi
     return 0
 }
 
-# Switch fallback_model back to the normal local backup, qwen35-fast (freerouter
-# itself only rotates OpenRouter's main/vision/reasoning/coding models — it never
-# touches fallback_model, so this script owns resetting it after a recovery)
 switch_to_openrouter() {
-    log "Switching back to OpenRouter mode"
+    log "Freerouter recovered — fallback_model stays pinned to qwen35-tiny (local); this only affects Freerouter's own model rotation, not the fallback tier"
     echo "{\"active\":\"openrouter\",\"timestamp\":\"$TIMESTAMP\"}" > "$FAILOVER_STATE"
-
-    if [[ "$DRY_RUN" == "false" ]]; then
-        if python3 "$SCRIPT_DIR/set_fallback_model.py" qwen35-fast 45071 >> "$LOG_FILE" 2>&1; then
-            log "fallback_model restored to qwen35-fast (local)"
-        else
-            log "ERROR: failed to restore fallback_model to qwen35-fast"
-        fi
-    else
-        log "DRY-RUN: would restore fallback_model to qwen35-fast (local)"
-    fi
 }
 
 # Send Telegram notification
