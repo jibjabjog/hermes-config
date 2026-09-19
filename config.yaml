@@ -163,7 +163,7 @@ bedrock:
 auxiliary:
   vision:
     provider: openrouter
-    model: nvidia/nemotron-3.5-lightning:free
+    model: deepseek/deepseek-v4-flash-0731:free
     base_url: ''
     api_key: ${OPENROUTER_API_KEY}
     timeout: 120
@@ -359,7 +359,7 @@ memory:
   provider: ''
   flush_min_turns: 10
 delegation:
-  model: nvidia/nemotron-3.5-lightning:free
+  model: deepseek/deepseek-v4-flash-0731:free
   provider: openrouter
   base_url: https://openrouter.ai/api/v1
   api_key: ''
@@ -1054,8 +1054,8 @@ custom_providers:
     models_discovered: true
 fallback_model:
   provider: custom
-  model: qwen35-tiny
-  base_url: http://127.0.0.1:45072/v1
+  model: google/gemma-4-E2B-it-qat-q4_0-gguf:IT
+  base_url: http://127.0.0.1:8080/v1
   api_key: llama.cpp
 platforms:
   telegram:
