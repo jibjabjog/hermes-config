@@ -30,6 +30,8 @@ sync_configs() {
     log "Syncing live configs..."
     cp /home/huey/.hermes/scripts/freerouter_failover.sh "$BACKUP_DIR/" 2>/dev/null || true
     cp /home/huey/.hermes/scripts/backup_hermes.sh "$BACKUP_DIR/" 2>/dev/null || true
+    cp /home/huey/.hermes/scripts/fallback_guard.sh "$BACKUP_DIR/" 2>/dev/null || true
+    cp /home/huey/.hermes/scripts/fallback_warm.sh "$BACKUP_DIR/" 2>/dev/null || true
     cp /home/huey/llama-presets.ini "$BACKUP_DIR/" 2>/dev/null || true
     cp /home/huey/.hermes/config.yaml "$BACKUP_DIR/" 2>/dev/null || true
     # Backup critical identity files

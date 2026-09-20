@@ -1,6 +1,9 @@
 #!/bin/bash
 # freerouter_failover.sh — Wraps freerouter.py with automatic local-llama fallback
-# If freerouter fails or returns non-zero, switch to qwen35-tiny (port 45072)
+# Daily OpenRouter model rotation. Hermes' LOCAL FALLBACK (gemma-4-E2B behind
+# llama-router.service, :8080) is pinned in config.yaml and kept alive/verified by
+# fallback_guard.sh — this script no longer switches it, and if freerouter fails
+# the previous model selection stays in place.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -47,20 +50,20 @@ ensure_qwen35_tiny() {
     fi
 }
 
-# fallback_model is now permanently pinned to qwen35-tiny (port 45072) —
-# it no longer swaps between two local tiers (the old qwen35-fast/4B tier was
-# retired: it was resource-heavy on this CPU-only box and, separately, its
-# base_url had silently gone stale — see AUDIT.md). These functions now only
-# track/report Freerouter's own OpenRouter-availability state; they
-# deliberately no longer touch fallback_model.
+# fallback_model is pinned to gemma-4-E2B (llama-router :8080) since 2026-09-18;
+# fallback_guard.sh (cron, every 5 min) keeps it running and detects config
+# drift. The earlier tiers (qwen35-fast/4B; then qwen35-tiny) are retired as the
+# fallback — qwen35-tiny ("Inky", :45072) still serves auxiliary tasks, which is
+# why it is still checked below. These functions only track/report Freerouter's
+# own OpenRouter-availability state; they deliberately never touch fallback_model.
 switch_to_local() {
-    log "Freerouter unavailable — fallback_model already pinned to qwen35-tiny (local), nothing to switch"
+    log "Freerouter unavailable — keeping the previous model selection; fallback_model stays pinned to local gemma-4-E2B (:8080), nothing to switch"
     echo "{\"active\":\"local\",\"timestamp\":\"$TIMESTAMP\"}" > "$FAILOVER_STATE"
     return 0
 }
 
 switch_to_openrouter() {
-    log "Freerouter recovered — fallback_model stays pinned to qwen35-tiny (local); this only affects Freerouter's own model rotation, not the fallback tier"
+    log "Freerouter recovered — fallback_model stays pinned to local gemma-4-E2B (:8080); this only affects Freerouter's own model rotation, not the fallback tier"
     echo "{\"active\":\"openrouter\",\"timestamp\":\"$TIMESTAMP\"}" > "$FAILOVER_STATE"
 }
 
@@ -191,7 +194,7 @@ if [[ $EXIT_CODE -eq 0 ]]; then
     exit 0
 else
     log "ERROR: Freerouter failed (exit $EXIT_CODE)"
-    log "Activating LOCAL FAILOVER: qwen35-tiny on port 45072"
+    log "Freerouter failed — previous OpenRouter selection kept; local fallback is gemma-4-E2B on :8080"
 
     switch_to_local
 
@@ -212,8 +215,8 @@ else
     fi
 
     # Telegram alert for failover event
-    send_telegram_update "⚠️ FAILOVER: Freerouter failed. Switched to local qwen35-tiny (port 45072)"
+    send_telegram_update "⚠️ Freerouter failed (exit $EXIT_CODE) — model rotation skipped, previous selection kept. Local fallback (gemma-4-E2B :8080) unchanged."
 
-    log "FAILOVER ACTIVE: Running on qwen35-tiny local backup"
+    log "Freerouter run failed; local fallback (gemma-4-E2B) unchanged"
     exit 1
 fi
