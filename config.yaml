@@ -1,7 +1,7 @@
 model:
   default: openrouter/free
   provider: openrouter
-  base_url: ''  # Fixed by openrouter_model_updater
+  base_url: ''
   api_mode: chat_completions
 providers:
   custom:
@@ -574,7 +574,7 @@ secrets:
 paste_collapse_threshold: 5
 paste_collapse_threshold_fallback: 0
 paste_collapse_char_threshold: 2000
-_config_version: 39
+_config_version: 45
 session_reset:
   mode: both
   idle_minutes: 1440
@@ -582,6 +582,7 @@ session_reset:
 group_sessions_per_user: true
 platform_toolsets:
   cli:
+    - connections
     - hermes-cli
   telegram:
     - hermes-telegram
