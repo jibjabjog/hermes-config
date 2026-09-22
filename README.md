@@ -328,7 +328,13 @@ reverted by a `hermes update` — reapply it manually if Google Workspace calls 
 failing with import errors after an update.
 
 ### GitHub Setup
-- Repository: `jibjabjog/hermes-config` (private)
+- Repository: `jibjabjog/hermes-config` — **public, by design.** Secrets
+  never land here in the first place (`redact_config_secrets.py` strips
+  anything secret-shaped from `config.yaml` before it's ever staged), so
+  this repo doubles as a public reference for anyone rebuilding a similar
+  setup. If you're forking this pattern for your own deployment, decide
+  deliberately rather than defaulting to public — this box's owner
+  confirmed no keys are exposed before making that call.
 - Required scopes: `repo`, `gist`, `workflow`, `read:org`
 - Token: 6-month expiry (user-managed)
 
