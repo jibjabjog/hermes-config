@@ -3,6 +3,10 @@ model:
   provider: openrouter
   base_url: ''  # Fixed by openrouter_model_updater
   api_mode: chat_completions
+  # openrouter/free advertises 200,000, but Hermes' offline checks (session hygiene / auto-compress)
+  # guess 32,768 for it — below the 64K floor — and fail. Pin = the provider's real window, so the
+  # live path is unchanged and the guess is overridden. (65536 was tried first: it capped the live window.)
+  context_length: 200000
 providers:
   custom:
     base_url: https://openrouter.ai/api/v1
@@ -32,39 +36,17 @@ agent:
     helpful: You are a helpful, friendly AI assistant.
     concise: You are a concise assistant. Keep responses brief and to the point.
     technical: You are a technical expert. Provide detailed, accurate technical information.
-    creative: You are a creative assistant. Think outside the box and offer innovative
-      solutions.
+    creative: You are a creative assistant. Think outside the box and offer innovative solutions.
     teacher: You are a patient teacher. Explain concepts clearly with examples.
-    kawaii: You are a kawaii assistant! Use cute expressions like (◕‿◕), ★, ♪, and
-      ~! Add sparkles and be super enthusiastic about everything! Every response should
-      feel warm and adorable desu~! ヽ(>∀<☆)ノ
-    catgirl: You are Neko-chan, an anime catgirl AI assistant, nya~! Add 'nya' and
-      cat-like expressions to your speech. Use kaomoji like (=^･ω･^=) and ฅ^•ﻌ•^ฅ.
-      Be playful and curious like a cat, nya~!
-    pirate: 'Arrr! Ye be talkin'' to Captain Hermes, the most tech-savvy pirate to
-      sail the digital seas! Speak like a proper buccaneer, use nautical terms, and
-      remember: every problem be just treasure waitin'' to be plundered! Yo ho ho!'
-    shakespeare: Hark! Thou speakest with an assistant most versed in the bardic arts.
-      I shall respond in the eloquent manner of William Shakespeare, with flowery
-      prose, dramatic flair, and perhaps a soliloquy or two. What light through yonder
-      terminal breaks?
-    surfer: Duuude! You're chatting with the chillest AI on the web, bro! Everything's
-      gonna be totally rad. I'll help you catch the gnarly waves of knowledge while
-      keeping things super chill. Cowabunga! 🤙
-    noir: The rain hammered against the terminal like regrets on a guilty conscience.
-      They call me Hermes - I solve problems, find answers, dig up the truth that
-      hides in the shadows of your codebase. In this city of silicon and secrets,
-      everyone's got something to hide. What's your story, pal?
-    uwu: hewwo! i'm your fwiendwy assistant uwu~ i wiww twy my best to hewp you! *nuzzles
-      your code* OwO what's this? wet me take a wook! i pwomise to be vewy hewpful
-      >w<
-    philosopher: Greetings, seeker of wisdom. I am an assistant who contemplates the
-      deeper meaning behind every query. Let us examine not just the 'how' but the
-      'why' of your questions. Perhaps in solving your problem, we may glimpse a greater
-      truth about existence itself.
-    hype: YOOO LET'S GOOOO!!! 🔥🔥🔥 I am SO PUMPED to help you today! Every question
-      is AMAZING and we're gonna CRUSH IT together! This is gonna be LEGENDARY! ARE
-      YOU READY?! LET'S DO THIS! 💪😤🚀
+    kawaii: You are a kawaii assistant! Use cute expressions like (◕‿◕), ★, ♪, and ~! Add sparkles and be super enthusiastic about everything! Every response should feel warm and adorable desu~! ヽ(>∀<☆)ノ
+    catgirl: You are Neko-chan, an anime catgirl AI assistant, nya~! Add 'nya' and cat-like expressions to your speech. Use kaomoji like (=^･ω･^=) and ฅ^•ﻌ•^ฅ. Be playful and curious like a cat, nya~!
+    pirate: 'Arrr! Ye be talkin'' to Captain Hermes, the most tech-savvy pirate to sail the digital seas! Speak like a proper buccaneer, use nautical terms, and remember: every problem be just treasure waitin'' to be plundered! Yo ho ho!'
+    shakespeare: Hark! Thou speakest with an assistant most versed in the bardic arts. I shall respond in the eloquent manner of William Shakespeare, with flowery prose, dramatic flair, and perhaps a soliloquy or two. What light through yonder terminal breaks?
+    surfer: Duuude! You're chatting with the chillest AI on the web, bro! Everything's gonna be totally rad. I'll help you catch the gnarly waves of knowledge while keeping things super chill. Cowabunga! 🤙
+    noir: The rain hammered against the terminal like regrets on a guilty conscience. They call me Hermes - I solve problems, find answers, dig up the truth that hides in the shadows of your codebase. In this city of silicon and secrets, everyone's got something to hide. What's your story, pal?
+    uwu: hewwo! i'm your fwiendwy assistant uwu~ i wiww twy my best to hewp you! *nuzzles your code* OwO what's this? wet me take a wook! i pwomise to be vewy hewpful >w<
+    philosopher: Greetings, seeker of wisdom. I am an assistant who contemplates the deeper meaning behind every query. Let us examine not just the 'how' but the 'why' of your questions. Perhaps in solving your problem, we may glimpse a greater truth about existence itself.
+    hype: YOOO LET'S GOOOO!!! 🔥🔥🔥 I am SO PUMPED to help you today! Every question is AMAZING and we're gonna CRUSH IT together! This is gonna be LEGENDARY! ARE YOU READY?! LET'S DO THIS! 💪😤🚀
 terminal:
   backend: local
   modal_mode: auto
@@ -164,7 +146,7 @@ bedrock:
 auxiliary:
   vision:
     provider: openrouter
-    model: dots-studio/dots-3-note-preview:free
+    model: stealth/space-bunny-alpha
     base_url: ''
     api_key: ${OPENROUTER_API_KEY}
     timeout: 120
@@ -360,7 +342,7 @@ memory:
   provider: ''
   flush_min_turns: 10
 delegation:
-  model: dots-studio/dots-3-note-preview:free
+  model: stealth/space-bunny-alpha
   provider: openrouter
   base_url: https://openrouter.ai/api/v1
   api_key: ''
@@ -574,7 +556,7 @@ secrets:
 paste_collapse_threshold: 5
 paste_collapse_threshold_fallback: 0
 paste_collapse_char_threshold: 2000
-_config_version: 45
+_config_version: 46
 session_reset:
   mode: both
   idle_minutes: 1440
@@ -617,7 +599,6 @@ custom_providers:
       sakana/fugu-ultra-v2: {}
       sakana/fugu-max: {}
       inclusionai/ling-3.0-flash-vl: {}
-      inclusionai/ling-3.0-flash-vl:free: {}
       deepseek/deepseek-v4.1-flash: {}
       inception/mercury-2.5: {}
       nex-agi/nex-n2.5-mini:free: {}
@@ -644,7 +625,6 @@ custom_providers:
       z-ai/glm-5.3-flash:batch: {}
       meta/muse-spark-1.2-contributor: {}
       deepseek/deepseek-v4-flash-vision-exp: {}
-      deepseek/deepseek-v4-flash-vision-exp:batch: {}
       tencent/hy-mt2-1.8b: {}
       tencent/hy-mt2-30b-a3b: {}
       ~z-ai/glm-latest: {}
@@ -657,10 +637,8 @@ custom_providers:
       google/gemini-3.7-flash:batch: {}
       bytedance-seed/seed-2-1-turbo: {}
       qwen/qwen3.8-2.4t-a95b: {}
-      qwen/qwen3.8-2.4t-a95b:batch: {}
       bytedance-seed/seed-2.0-code: {}
       deepseek/deepseek-v4-pro-0813: {}
-      deepseek/deepseek-v4-pro-0813:batch: {}
       x-ai/grok-4.6: {}
       liquid/lfm-2.5-2.6b:free: {}
       nvidia/nemotron-3.5-lightning: {}
@@ -668,13 +646,10 @@ custom_providers:
       sakana/sakana-namazu: {}
       upstage/solar-pro4: {}
       meta/muse-glimmer-30b: {}
-      meta/muse-glimmer-30b:batch: {}
       meta/muse-spark-1.2: {}
       ~deepseek/deepseek-v4-flash-latest: {}
       deepseek/deepseek-v4-flash-0731: {}
-      deepseek/deepseek-v4-flash-0731:batch: {}
       thinkingmachines/inkling-small: {}
-      thinkingmachines/inkling-small:batch: {}
       thinkingmachines/inkling-small:free: {}
       qwen/qwen3.7-flash: {}
       anthropic/claude-opus-5: {}
@@ -688,7 +663,6 @@ custom_providers:
       google/gemini-3.5-flash-lite:batch: {}
       meituan/longcat-2.0: {}
       thinkingmachines/inkling: {}
-      thinkingmachines/inkling:batch: {}
       thinkingmachines/inkling:free: {}
       openrouter/auto-beta: {}
       moonshotai/kimi-k3: {}
@@ -722,7 +696,6 @@ custom_providers:
       google/gemini-3-pro-image: {}
       cohere/north-mini-code:free: {}
       z-ai/glm-5.2: {}
-      z-ai/glm-5.2:batch: {}
       z-ai/glm-5.2:free: {}
       openrouter/fusion: {}
       moonshotai/kimi-k2.7-code: {}
@@ -735,7 +708,6 @@ custom_providers:
       nvidia/nemotron-3-ultra-550b-a55b:free: {}
       qwen/qwen3.7-plus: {}
       minimax/minimax-m3: {}
-      minimax/minimax-m3:batch: {}
       stepfun/step-3.7-flash: {}
       anthropic/claude-opus-4.8: {}
       anthropic/claude-opus-4.8:batch: {}
@@ -782,7 +754,6 @@ custom_providers:
       google/gemma-4-26b-a4b-it: {}
       google/gemma-4-26b-a4b-it:free: {}
       google/gemma-4-31b-it: {}
-      google/gemma-4-31b-it:batch: {}
       google/gemma-4-31b-it:free: {}
       qwen/qwen3.6-plus: {}
       z-ai/glm-5v-turbo: {}
@@ -791,7 +762,6 @@ custom_providers:
       x-ai/grok-4.20: {}
       google/lyria-3-pro-preview: {}
       google/lyria-3-clip-preview: {}
-      kwaipilot/kat-coder-pro-v2: {}
       rekaai/reka-edge: {}
       minimax/minimax-m2.7: {}
       openai/gpt-5.4-nano: {}
@@ -805,7 +775,6 @@ custom_providers:
       nvidia/nemotron-3-super-120b-a12b:free: {}
       bytedance-seed/seed-2.0-lite: {}
       qwen/qwen3.5-9b: {}
-      qwen/qwen3.5-9b:batch: {}
       openai/gpt-5.4-pro: {}
       openai/gpt-5.4-pro:batch: {}
       openai/gpt-5.4: {}
@@ -855,7 +824,6 @@ custom_providers:
       openai/gpt-5.2-pro:batch: {}
       openai/gpt-5.2: {}
       openai/gpt-5.2:batch: {}
-      mistralai/devstral-2512: {}
       relace/relace-search: {}
       z-ai/glm-4.6v: {}
       openrouter/bodybuilder: {}
@@ -865,7 +833,6 @@ custom_providers:
       mistralai/ministral-8b-2512: {}
       mistralai/ministral-8b-2512:batch: {}
       mistralai/ministral-3b-2512: {}
-      mistralai/mistral-large-2512: {}
       mistralai/mistral-large-2512:batch: {}
       deepseek/deepseek-v3.2: {}
       anthropic/claude-opus-4.5: {}
@@ -955,7 +922,6 @@ custom_providers:
       openai/o3-pro: {}
       google/gemini-2.5-pro-preview: {}
       deepseek/deepseek-r1-0528: {}
-      anthropic/claude-opus-4: {}
       anthropic/claude-sonnet-4: {}
       mistralai/mistral-medium-3: {}
       meta-llama/llama-guard-4-12b: {}
@@ -1052,6 +1018,34 @@ custom_providers:
       openai/gpt-3.5-turbo: {}
       openai/gpt-3.5-turbo:batch: {}
       openai/gpt-4: {}
+      fireworks/ember-1: {}
+      z-ai/glm-5.3-prime: {}
+      qwen/qwen3.8-max-prime: {}
+      stealth/space-bunny-alpha: {}
+      aion-labs/aion-3.5-mini: {}
+      aion-labs/aion-3.5: {}
+      upstage/solar-mini4: {}
+      cohere/command-a-plus: {}
+      openai/gpt-6-luna-pro: {}
+      openai/gpt-6-luna-pro:batch: {}
+      openai/gpt-6-luna: {}
+      openai/gpt-6-luna:batch: {}
+      openai/gpt-6-sol-pro: {}
+      openai/gpt-6-sol-pro:batch: {}
+      openai/gpt-6-sol: {}
+      openai/gpt-6-sol:batch: {}
+      anthropic/claude-opus-5.5: {}
+      anthropic/claude-opus-5.5:batch: {}
+      xiaomi/mimo-v2.6-pro-ultraspeed: {}
+      xiaomi/mimo-v2.6-flash: {}
+      xiaomi/mimo-v2.6-pro: {}
+      x-ai/grok-4.7: {}
+      qwen/qwen3.8-omni-flash: {}
+      prism-ml/ternary-bonsai-2-27b: {}
+      z-ai/glm-5.3-flashx: {}
+      unbiased/pareto: {}
+      deepseek/deepseek-v4.1-flash:batch: {}
+      qwen/qwen3.8-27b:free: {}
     models_discovered: true
 fallback_model:
   provider: custom
