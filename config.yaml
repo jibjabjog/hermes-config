@@ -153,68 +153,68 @@ auxiliary:
     download_timeout: 30
   compression:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 120
   skills_hub:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 30
   approval:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 30
   mcp:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 30
   title_generation:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 30
   triage_specifier:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 120
   kanban_decomposer:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 300
   profile_describer:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 60
   curator:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 600
   web_extract:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
     timeout: 360
   session_search:
     provider: custom
-    model: qwen35-tiny
-    base_url: http://127.0.0.1:45072/v1
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
     api_key: llama.cpp
 display:
   compact: false
@@ -1049,7 +1049,7 @@ custom_providers:
     models_discovered: true
 fallback_model:
   provider: custom
-  model: google/gemma-4-E2B-it-qat-q4_0-gguf:IT
+  model: inky
   base_url: http://127.0.0.1:8080/v1
   api_key: llama.cpp
 platforms:

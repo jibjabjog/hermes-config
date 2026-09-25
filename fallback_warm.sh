@@ -22,7 +22,7 @@ set -uo pipefail
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
 PY="$HERMES_HOME/hermes-agent/venv/bin/python"
 LOG="$HERMES_HOME/logs/fallback_guard.log"
-EXPECT_MODEL="${FALLBACK_EXPECT_MODEL:-google/gemma-4-E2B-it-qat-q4_0-gguf:IT}"
+EXPECT_MODEL="${FALLBACK_EXPECT_MODEL:-inky}"   # inky = gemma-4-E2B, the single local failover (2026-09-24)
 EXPECT_URL="${FALLBACK_EXPECT_URL:-http://127.0.0.1:8080/v1}"
 PLATFORM="${WARM_PLATFORM:-telegram}"
 PAYLOAD="${WARM_PAYLOAD:-$HERMES_HOME/cache/warm_${PLATFORM}.json}"

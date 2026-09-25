@@ -30,7 +30,7 @@ LOG="$HERMES_HOME/logs/fallback_guard.log"
 STATE="${FALLBACK_STATE:-$HERMES_HOME/fallback_guard.state}"
 LOCK="${FALLBACK_LOCK:-$HERMES_HOME/.fallback_guard.lock}"
 UNIT="${FALLBACK_UNIT:-llama-router.service}"
-EXPECT_MODEL="${FALLBACK_EXPECT_MODEL:-google/gemma-4-E2B-it-qat-q4_0-gguf:IT}"
+EXPECT_MODEL="${FALLBACK_EXPECT_MODEL:-inky}"   # inky = gemma-4-E2B, the single local failover (2026-09-24)
 EXPECT_URL="${FALLBACK_EXPECT_URL:-http://127.0.0.1:8080/v1}"
 PROBE_TIMEOUT="${FALLBACK_PROBE_TIMEOUT:-180}"      # cold model load ~16 s; allow slack
 START_WAIT="${FALLBACK_START_WAIT:-90}"

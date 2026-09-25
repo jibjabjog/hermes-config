@@ -17,45 +17,17 @@ log() {
     echo "[$TIMESTAMP] $1" | tee -a "$LOG_FILE"
 }
 
-# Check if local backup (qwen35-tiny) is running
-check_qwen35_tiny() {
-    curl -s --max-time 3 http://127.0.0.1:45072/health > /dev/null 2>&1
-}
+# 2026-09-24: qwen35-tiny (:45072) has been retired. The single local failover is
+# now "inky" (gemma-4-E2B) on the router at :8080, kept alive/warm/honest by
+# fallback_guard.sh + fallback_warm.sh — this script does not manage it. The old
+# check_qwen35_tiny()/ensure_qwen35_tiny() helpers were removed with the model.
 
-# Ensure qwen35-tiny is running (start if not)
-ensure_qwen35_tiny() {
-    if ! check_qwen35_tiny; then
-        log "WARN: qwen35-tiny not running on port 45072 — starting it"
-        # NOTE: qwen35-tiny is now managed by the llama-qwen35-tiny.service systemd
-        # --user unit (Restart=always), so this manual spawn is a last-resort fallback
-        # only — it should not normally be needed. The path below was previously wrong
-        # ("$SCRIPT_DIR/../llama.cpp/..." resolved to ~/.hermes/llama.cpp/..., which
-        # doesn't exist) and silently failed every run; fixed to the real binary location.
-        /home/huey/llama.cpp/build/bin/llama-server \
-            --host 127.0.0.1 --port 45072 \
-            --alias qwen35-tiny \
-            --model "$HERMES_HOME/../models/Qwen3.5-0.8B-Q4_K_M.gguf" \
-            --ctx-size 2048 --threads 4 --n-gpu-layers 0 \
-            --cache-type-k q4_0 --cache-type-v q4_0 \
-            >> "$HERMES_HOME/logs/qwen35-tiny.log" 2>&1 &
-        sleep 3
-        if check_qwen35_tiny; then
-            log "OK: qwen35-tiny started on port 45072"
-        else
-            log "ERROR: Failed to start qwen35-tiny"
-            return 1
-        fi
-    else
-        log "OK: qwen35-tiny already running on port 45072"
-    fi
-}
-
-# fallback_model is pinned to gemma-4-E2B (llama-router :8080) since 2026-09-18;
-# fallback_guard.sh (cron, every 5 min) keeps it running and detects config
-# drift. The earlier tiers (qwen35-fast/4B; then qwen35-tiny) are retired as the
-# fallback — qwen35-tiny ("Inky", :45072) still serves auxiliary tasks, which is
-# why it is still checked below. These functions only track/report Freerouter's
-# own OpenRouter-availability state; they deliberately never touch fallback_model.
+# fallback_model is pinned to inky = gemma-4-E2B (llama-router :8080) since
+# 2026-09-18; fallback_guard.sh keeps it running and detects config drift. All
+# earlier tiers (qwen35-fast/4B and qwen35-tiny) are fully retired — inky is now
+# the ONLY local failover, and also serves the auxiliary model roles. These
+# functions only track/report Freerouter's own OpenRouter-availability state;
+# they deliberately never touch fallback_model.
 switch_to_local() {
     log "Freerouter unavailable — keeping the previous model selection; fallback_model stays pinned to local gemma-4-E2B (:8080), nothing to switch"
     echo "{\"active\":\"local\",\"timestamp\":\"$TIMESTAMP\"}" > "$FAILOVER_STATE"
@@ -148,11 +120,8 @@ else
     DRY_RUN=false
 fi
 
-# Ensure local backup is ready before anything else
-if ! ensure_qwen35_tiny; then
-    log "ERROR: Cannot ensure qwen35-tiny is running"
-    exit 1
-fi
+# The local failover (inky @ :8080) is owned by fallback_guard.sh, not this
+# script — nothing to ensure here anymore.
 
 # Run freerouter with timeout
 FREEROUTER_TIMEOUT=300  # 5 min max
