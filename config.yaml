@@ -10,7 +10,18 @@ model:
 providers:
   custom:
     base_url: https://openrouter.ai/api/v1
-fallback_providers: []
+fallback_providers:
+  # Explicit primary-model fallback chain: when the main model (openrouter/free)
+  # errors, drop to the local gemma-4-E2B ("inky") on the llama-router at :8080.
+  # This is the modern key (docs deprecate the top-level fallback_model). It mirrors
+  # the fallback_model block below; get_fallback_chain() dedups them, and keeping
+  # fallback_model present means fallback_guard.sh still finds its watched key.
+  # Added 2026-09-25 (sole-writer edit; the .model_fallback.json cloud rotation is
+  # separate and freerouter-owned).
+  - provider: custom
+    model: inky
+    base_url: http://127.0.0.1:8080/v1
+    api_key: llama.cpp
 toolsets:
   - hermes-cli
 agent:
