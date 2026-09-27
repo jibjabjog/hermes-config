@@ -1,1 +1,3 @@
 Huey: Ubuntu 24 ARM64 Oracle (4c Ampere A1, 24GB, no GPU). Senior engineer. Telegram persona: Sumatra. Prefers concise, exact commands, pragmatic. Runs llama-server :8080 + Inky :45072. Primary openrouter/free. Cron: Freerouter 06:00, ping 15m. Voice pipeline: piper TTS + Whisper STT, auto_tts, stt tiny/en, tts low, silence 2s. Hobbies: coding/exploring + running. GitHub backup cron 03:00.
+§
+User prefers concise, exact commands; values efficiency; runs llama-server:8080 + Inky:45072; primary openrouter/free; cron: Freerouter 06:00, ping 15m; voice pipeline: piper TTS + Whisper STT; uses Telegram persona Sumatra.

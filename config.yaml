@@ -10,18 +10,14 @@ model:
 providers:
   custom:
     base_url: https://openrouter.ai/api/v1
-fallback_providers:
-  # Explicit primary-model fallback chain: when the main model (openrouter/free)
-  # errors, drop to the local gemma-4-E2B ("inky") on the llama-router at :8080.
-  # This is the modern key (docs deprecate the top-level fallback_model). It mirrors
-  # the fallback_model block below; get_fallback_chain() dedups them, and keeping
-  # fallback_model present means fallback_guard.sh still finds its watched key.
-  # Added 2026-09-25 (sole-writer edit; the .model_fallback.json cloud rotation is
-  # separate and freerouter-owned).
-  - provider: custom
-    model: inky
-    base_url: http://127.0.0.1:8080/v1
-    api_key: llama.cpp
+# Kept empty on purpose. This box's fallback_guard.sh treats the top-level
+# fallback_model (pinned to local inky @ :8080, further down) as the SINGLE source of
+# truth for the local failover, and pages "local fallback not healthy" every cycle if
+# fallback_providers is non-empty — even when the entry is the identical inky route.
+# get_fallback_chain() already merges in fallback_model, so inky IS the fallback with
+# this list empty. (2026-09-26: reverted from an explicit inky entry that tripped the
+# guard; see config.yaml.pre-fallback-providers.2026-09-25.bak.)
+fallback_providers: []
 toolsets:
   - hermes-cli
 agent:
