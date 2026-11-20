@@ -344,7 +344,7 @@ memory:
   provider: ''
   flush_min_turns: 10
 delegation:
-  model: particle-ai/particle-1:free
+  model: inclusionai/ling-3.2-flash:free
   provider: openrouter
   base_url: https://openrouter.ai/api/v1
   api_key: ''
