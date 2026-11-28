@@ -148,7 +148,7 @@ bedrock:
 auxiliary:
   vision:
     provider: openrouter
-    model: particle-ai/particle-1:free
+    model: nvidia/nemotron-3.5-super-vl:free
     base_url: ''
     api_key: ${OPENROUTER_API_KEY}
     timeout: 120
